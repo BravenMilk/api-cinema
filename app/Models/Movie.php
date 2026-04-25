@@ -29,4 +29,12 @@ class Movie extends Model
     {
         return $this->hasMany(Showtime::class);
     }
+
+    /**
+     * Ulasan untuk film ini.
+     */
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(\App\Models\Review::class);
+    }
 }

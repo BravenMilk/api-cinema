@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\TicketController;
 use App\Http\Controllers\Api\HallController;
 use App\Http\Controllers\Api\SeatTypeController;
 use App\Http\Controllers\Api\RoleController;
+use App\Http\Controllers\Api\ReviewController;
 
 
 
@@ -48,6 +49,9 @@ Route::get('/movies', [MovieController::class, 'index']);
 Route::get('/movies/{id}', [MovieController::class, 'show']);
 Route::get('/showtimes', [ShowtimeController::class, 'index']);
 Route::get('/showtimes/{id}', [ShowtimeController::class, 'show']);
+
+// Ulasan Film (publik - baca saja, optional auth untuk can_review & my_review)
+Route::get('/movies/{movieId}/reviews', [ReviewController::class, 'index']);
 
 // Informasi Tambahan
 Route::get('/halls', [HallController::class, 'index']);
@@ -101,6 +105,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // Admin Specific Reports
         Route::get('/bookings/recap', [BookingController::class, 'recap']);
+
+        // Admin hapus ulasan siapapun
+        Route::delete('/reviews/{reviewId}', [ReviewController::class, 'adminDestroy']);
     });
 
     // === SHARED MANAGEMENT ROUTES (Staff & Admin) ===
@@ -115,6 +122,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/bookings', [BookingController::class, 'store']);
         Route::get('/my-bookings', [BookingController::class, 'myBookings']);
         Route::post('/bookings/{bookingCode}/cancel', [BookingController::class, 'cancel']);
+
+        // Ulasan - customer bisa tulis, edit, hapus ulasan sendiri
+        Route::post('/movies/{movieId}/reviews', [ReviewController::class, 'store']);
+        Route::put('/movies/{movieId}/reviews', [ReviewController::class, 'update']);
+        Route::delete('/movies/{movieId}/reviews', [ReviewController::class, 'destroy']);
     });
 
     Route::middleware(['petugas'])->group(function () {
